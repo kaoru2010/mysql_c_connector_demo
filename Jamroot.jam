@@ -1,0 +1,26 @@
+import testing ;
+import os ;
+
+local MYSQL_C_FLAGS = [ COMMAND "mysql_config --cflags | tr -d '\n'" ] ;
+local MYSQL_LD_FLAGS = [ COMMAND "mysql_config --libs_r | tr -d '\n'" ] ;
+
+ECHO "MySQL options detected:\n" ;
+ECHO "mysql_config --cflags:\n" $(MYSQL_C_FLAGS) ;
+ECHO "mysql_config --libs_r:\n" $(MYSQL_LD_FLAGS) ;
+
+use-project /boost : [ os.environ BOOST_ROOT ] ;
+
+project mysql_sample
+    : requirements
+    <cflags>$(MYSQL_C_FLAGS)
+    <linkflags>$(MYSQL_LD_FLAGS)
+    <threading>multi
+    <toolset>clang:<cxxflags>-std=c++11
+    <toolset>gcc:<cxxflags>-std=gnu++0x
+    ;
+
+run mysql_init.cpp ;
+run mysql_query.cpp
+    /boost//system
+    /boost//thread
+    ;
